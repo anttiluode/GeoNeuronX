@@ -1,0 +1,48 @@
+{
+  "config": {
+    "dt_ms": 0.5,
+    "n_samples": 16000,
+    "burn": 2000,
+    "seeds": [0, 1, 2, 3, 4],
+    "heterogeneity": [0.0, 0.2, 0.4, 0.6, 0.8],
+    "total_length_um": 840.0,
+    "oscillatory_frequencies_hz": [2.0, 20.0, 100.0],
+    "amuse_lag_samples": 16,
+    "amuse_lag_ms": 8.0,
+    "measurement_noise_fraction": 0.003
+  },
+  "summary": {
+    "oscillatory": {
+      "0.0": {"path_std_um": 0.0, "transfer_condition": 601.2895928251147, "pca_recovery": 0.7216685376233867, "amuse_recovery": 0.7356286222705994, "oracle_corr": 0.7847647439516197, "oracle_nmse": 0.3787530960580979, "total_length_um": 840.0, "dendritic_area_cm2": 3.9584067435231396e-05},
+      "0.2": {"path_std_um": 16.950374024732348, "transfer_condition": 335.867950021055, "pca_recovery": 0.7766268486672833, "amuse_recovery": 0.8199510963167956, "oracle_corr": 0.8451973688164932, "oracle_nmse": 0.28182364779855906, "total_length_um": 840.0, "dendritic_area_cm2": 3.9584067435231396e-05},
+      "0.4": {"path_std_um": 33.90074804946471, "transfer_condition": 223.4368932958786, "pca_recovery": 0.8004893964464614, "amuse_recovery": 0.8493498102432756, "oracle_corr": 0.8676905305071069, "oracle_nmse": 0.24496030501047428, "total_length_um": 840.0, "dendritic_area_cm2": 3.95840674352314e-05},
+      "0.6": {"path_std_um": 50.85112207419705, "transfer_condition": 171.50180665686355, "pca_recovery": 0.8146148836557611, "amuse_recovery": 0.861482520966829, "oracle_corr": 0.8771723966389662, "oracle_nmse": 0.22930962586199372, "total_length_um": 840.0, "dendritic_area_cm2": 3.9584067435231396e-05},
+      "0.8": {"path_std_um": 67.80149609892942, "transfer_condition": 144.18341303643268, "pca_recovery": 0.8241650922435841, "amuse_recovery": 0.866579684685702, "oracle_corr": 0.8810282168955983, "oracle_nmse": 0.22310869461316002, "total_length_um": 840.0, "dendritic_area_cm2": 3.9584067435231396e-05}
+    },
+    "ar1": {
+      "0.0": {"path_std_um": 0.0, "transfer_condition": 601.2895928251147, "pca_recovery": 0.4324599381038004, "amuse_recovery": 0.41909586708799945, "oracle_corr": 0.629670199616499, "oracle_nmse": 0.5905014227359393, "total_length_um": 840.0, "dendritic_area_cm2": 3.9584067435231396e-05},
+      "0.2": {"path_std_um": 16.950374024732348, "transfer_condition": 335.867950021055, "pca_recovery": 0.40070445658947074, "amuse_recovery": 0.4201895435126478, "oracle_corr": 0.6314267191761982, "oracle_nmse": 0.5881090520675405, "total_length_um": 840.0, "dendritic_area_cm2": 3.9584067435231396e-05},
+      "0.4": {"path_std_um": 33.90074804946471, "transfer_condition": 223.4368932958786, "pca_recovery": 0.3882492406692282, "amuse_recovery": 0.4161390291047171, "oracle_corr": 0.6288280838398829, "oracle_nmse": 0.5901543028842132, "total_length_um": 840.0, "dendritic_area_cm2": 3.95840674352314e-05},
+      "0.6": {"path_std_um": 50.85112207419705, "transfer_condition": 171.50180665686355, "pca_recovery": 0.385447102044237, "amuse_recovery": 0.4140605734707782, "oracle_corr": 0.6241405704154415, "oracle_nmse": 0.5940485765162393, "total_length_um": 840.0, "dendritic_area_cm2": 3.9584067435231396e-05},
+      "0.8": {"path_std_um": 67.80149609892942, "transfer_condition": 144.18341303643268, "pca_recovery": 0.38514987188539856, "amuse_recovery": 0.4122936936476157, "oracle_corr": 0.6182548610312855, "oracle_nmse": 0.5987510533678545, "total_length_um": 840.0, "dendritic_area_cm2": 3.9584067435231396e-05}
+    }
+  },
+  "digital_rc_attacker": {
+    "oscillatory": {"pca_recovery": 0.6010340471649452, "amuse_recovery": 0.682632808320194, "oracle_corr": 0.9548226176496263, "oracle_nmse": 0.08969951112615906},
+    "ar1": {"pca_recovery": 0.4476520812535765, "amuse_recovery": 0.4021841449240925, "oracle_corr": 0.6421281010167694, "oracle_nmse": 0.5757717419969081}
+  },
+  "reciprocity_relative_error": 3.3253290500535875e-16,
+  "fixed_material_relative_length_range": 5.413658939124573e-16,
+  "fixed_material_relative_area_range": 5.135599257798801e-16,
+  "gates": {
+    "fixed_material": true,
+    "passive_reciprocity": true,
+    "transfer_basis_improves": true,
+    "oscillatory_blind_separation_improves": true,
+    "oscillatory_information_improves": true
+  },
+  "boundary": {
+    "ar1_amuse_change_h0_to_h08": -0.006802173440338621,
+    "ar1_oracle_change_h0_to_h08": -0.011415338585236245
+  }
+}
