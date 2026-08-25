@@ -1,298 +1,556 @@
-# GeoNeuronX
+# GeoNeuronX — a dynamical neuron abstraction
 
-**Length is a temporal coordinate.**
+**History becomes state. Geometry shapes that state. Local nonlinearities compute on it. The AIS turns the result into an event stream.**
 
-GeoNeuronX is a falsification-first restart of the Geometric Neuron idea after the Monday/Tuesday source-separation work.
+GeoNeuronX is a falsification-first restart of the Geometric Neuron idea after the Saturday/Sunday/Monday/Tuesday lineage.
 
-It is **not** a claim that dendrites implement AMUSE, Takens, ICA, Oja, or any one named algorithm. Those are abstractions and attackers. The biological papers motivate a narrower question:
+The current object is no longer “a dendrite that literally implements Takens” or “a neuron that literally runs AMUSE.” Those were useful abstractions, not biological claims.
 
-> **Does the physical allocation of dendritic path length create useful temporal transfer diversity before the soma, and can an adaptive axon initial segment normalize the resulting high-dimensional computation into a narrow output event stream?**
+The thing now being tested is simpler and, I think, more important:
 
-That question is testable.
+> **Can a neuron-like unit be modeled as a dynamical computer whose own physical state converts recent input history into simultaneous internal coordinates, applies local nonlinear computation before those coordinates collapse at the soma, and then homeostatically compresses the result into an outgoing event stream?**
+
+That is the candidate **dynamical neuron**.
+
+It is an abstraction in the same spirit that McCulloch-Pitts was an abstraction: preserve a computational principle, throw away most of the biology, and let simpler digital attackers kill anything unnecessary.
 
 ---
 
-## Why restart now?
+# The abstraction we are actually looking at
 
-Three independent lines finally meet without needing metaphor.
-
-### 1. Aizenbud et al. 2026: morphology really changes single-neuron I/O complexity
-
-Aizenbud et al. quantify the input/output complexity of detailed human and rat cortical pyramidal neuron models by asking a fixed temporal convolutional network to imitate each cell. Human neurons are harder to emulate. The strongest morphological predictor is **total dendritic area** (`R² = 0.74`), while **longest bifurcation branch** is also strongly associated with complexity (`R² = 0.44`). Total area + longest bifurcation branch reaches `R² = 0.81`. Their interpretation emphasizes large dendritic trees, electrical compartmentalization, semi-independent dendritic subunits, and strong NMDA-mediated nonlinearities.
-
-This repo asks a more specific mechanistic question than their paper does:
-
-> Could part of the computational value of extra path length be that different paths implement different temporal transfer functions?
-
-That is an inference/hypothesis, not a result from Aizenbud et al.
-
-### 2. AMUSE/SOBI: history itself can identify hidden processes
-
-AMUSE whitens a multivariate time series and diagonalizes **one lagged covariance matrix**. SOBI generalizes this by jointly diagonalizing several lagged covariance matrices. In Tuesday's theorem-friendly calibration, a single lag was already enough to separate two dynamical sources essentially perfectly.
-
-So there is now a precise mathematical reason why a physical system exposing differently delayed/filtered versions of activity could be useful:
-
-> **different causes can be distinguishable because they relate differently to their own past.**
-
-### 3. The AIS is an adaptive neck
-
-The axon initial segment (AIS) is not just wire. It generates and shapes the action potential, separates the somatodendritic and axonal compartments, and exhibits activity-dependent plasticity. Reduced activity can lengthen the AIS; elevated activity can shift it distally. These changes are generally interpreted as homeostatic tuning of intrinsic excitability, and their effect depends on the dendritic arbor.
-
-That suggests a clean division of labor:
+McCulloch-Pitts preserves:
 
 ```text
-many synaptic mixtures
+weighted inputs
+      ↓
+threshold
+      ↓
+output bit
+```
+
+or roughly
+
+```text
+y(t) = H(w^T x(t) - theta)
+```
+
+GeoNeuronX is testing a richer primitive:
+
+```text
+TEMPORAL INPUT / SYNAPTIC MIXTURES
+                ↓
+        DENDRITIC DYNAMICS
+  path-dependent filtering / state
+                ↓
+      SIMULTANEOUS BRANCH STATE
+                ↓
+      LOCAL NONLINEAR SUBUNITS
+                ↓
+       LEARNED SOMA INTEGRATION
+                ↓
+              AIS
+     adaptive event bottleneck
+                ↓
+              AXON
+        narrow event stream
+                ↓
+       large downstream fan-out
+```
+
+A compact mathematical version is:
+
+```text
+r_j(t) = (h_j * x)(t)
+u_j(t) = phi_j(r_j(t))
+z(t)   = sum_j w_j u_j(t)
+y(t)   = AIS(z(t), slow_homeostatic_state)
+```
+
+where morphology changes the family of temporal filters `h_j`.
+
+The crucial difference from an ordinary static artificial neuron is:
+
+> **the coordinates presented to the learned weights are generated by the unit's own dynamics.**
+
+The dendrite does not merely store weights. Its state depends on what happened recently.
+
+---
+
+# Why this became plausible now
+
+Several previously separate lines finally line up without requiring metaphysics.
+
+## 1. Aizenbud et al. 2026 — morphology changes single-neuron I/O complexity
+
+Aizenbud et al. measure how hard a fixed temporal convolutional network must work to emulate detailed cortical neuron models. Human neurons are harder to mimic than rat neurons. Total dendritic area is a strong predictor of their Functional Complexity Index, and the **longest bifurcation branch** also carries substantial predictive power. Area plus longest bifurcation branch predicts still more.
+
+Their interpretation emphasizes large dendritic trees, electrical compartmentalization, semi-independent dendritic subunits, and stronger NMDA-mediated nonlinearities.
+
+GeoNeuronX asks a narrower mechanistic question that their paper does not answer:
+
+> **What computational value can path length and its allocation buy?**
+
+The working hypothesis is now:
+
+```text
+morphological allocation
         ↓
-DENDRITIC TREE
-path-dependent filtering
-local history
-local nonlinear subunits
+transfer-function diversity
         ↓
-SOMA
-rich analog state
+history distributed into branch state
         ↓
-AIS
-adaptive eventization / excitability governor
-        ↓
-AXON
-narrow spike stream, then large downstream fan-out
+local nonlinear temporal features
 ```
 
-The dendrite expands and transforms; the AIS compresses into an event channel; the axon distributes that event onward.
+That is our hypothesis, not their claim.
+
+## 2. AMUSE / SOBI — history can identify hidden processes
+
+AMUSE whitens a multivariate stream and diagonalizes one lagged covariance matrix. SOBI uses several lags.
+
+Tuesday's calibration showed that, for the chosen dynamical sources, a single lag could separate them essentially perfectly.
+
+The lesson was not “AMUSE is the neuron.” It was:
+
+> **different processes can be distinguishable because they relate differently to their own past.**
+
+That gives a concrete job to temporal diversity produced by a physical cable.
+
+## 3. Oja / local learning — a reader can adapt to the state already produced by dynamics
+
+Oja's rule is kept as a local PCA-like learning abstraction:
+
+```text
+y = w^T x
+Delta w = eta y (x - y w)
+```
+
+Oja does not create temporal memory by itself. But if its input coordinates are branch voltages that already contain differently filtered history, then a memoryless local learning rule can still learn temporal structure.
+
+So:
+
+```text
+physical dynamics create temporal coordinates
+local learning chooses which coordinates matter
+```
+
+## 4. The AIS — adaptive boundary between rich internal state and narrow output
+
+The axon initial segment is not passive wire. It initiates and shapes action potentials and exhibits activity-dependent plasticity. Reduced activity can lengthen the AIS; elevated activity can shift it distally. The effect of AIS geometry also depends on the dendritic arbor.
+
+That makes the AIS a natural abstraction for an adaptive output governor:
+
+```text
+rich dendritic/somatic analog state
+              ↓
+             AIS
+      adaptive excitability
+              ↓
+       narrow event stream
+```
+
+Then the axon branches again, turning one narrow stream into large fan-out across the next population.
+
+The whole neuron therefore has an hourglass shape:
+
+```text
+massive fan-in
+     ↓
+rich local dynamics
+     ↓
+narrow AIS event channel
+     ↓
+massive fan-out
+```
 
 ---
 
-## The core abstraction
+# What Takens means here now
 
-For a branch/path of length `L`, start with the minimal frequency response
-
-```text
-H(f, L) = exp(-alpha L) * exp(-i 2π f L / v)
-```
-
-Longer path:
-
-- attenuates differently;
-- rotates phase differently;
-- delays differently;
-- therefore changes the effective computation seen at the soma.
-
-A bank of paths gives a matrix:
+The original Geometric Neuron explicitly built
 
 ```text
-                 source / temporal mode
-              s1        s2        s3
-branch L1   H11       H12       H13
-branch L2   H21       H22       H23
-branch L3   H31       H32       H33
-   ...       ...       ...       ...
+[x(t), x(t-tau), x(t-2tau), ...]
 ```
 
-or simply
+and projected that delay vector against a fixed receptor mosaic.
 
-```text
-x(t) = A(L) s(t)
-```
+The strong interpretation is gone.
 
-where **morphology generates the observation matrix** `A(L)`.
+The useful residue is:
 
-Equal path lengths can produce redundant rows. Diverse path lengths can produce a higher-rank, better-conditioned temporal basis.
+> **Takens/delay coordinates were a cheap explicit way of turning history into simultaneous coordinates.**
 
-That does **not** mean morphology beats a digital matrix. A random digital matrix is an explicit attacker in Gate 0.
+A passive dendrite does not contain neat equal delays. It contains lossy continuous state distributed over a branched RC cable.
+
+But Gate 3 now gives us a much better sentence:
+
+> **dendritic dynamics can materialize history into space.**
+
+An external digital delay line does this explicitly. A physical cable can do part of it for free as part of its own dynamics.
 
 ---
 
-## Where Takens now fits
-
-The original Geometric Neuron used a literal delay vector:
-
-```text
-[x(t), x(t-τ), x(t-2τ), ...]
-```
-
-and projected it against a hand-designed cosine receptor mosaic.
-
-GeoNeuronX demotes the strong claim and keeps the useful abstraction:
-
-> **Takens/delay coordinates were a cheap stand-in for physical history distributed across paths.**
-
-A real dendrite is not a uniform delay line. It is a branched, lossy, nonlinear cable with many local compartments. But both constructions expose **history as coordinates**.
-
----
-
-## Where Oja now fits
-
-Oja's rule
-
-```text
-y = wᵀx
-Δw = η y (x - y w)
-```
-
-is included as an online local baseline.
-
-The important correction is that Oja does **not** normalize the incoming signal. The `-y²w` term limits the growth of the learned weight vector, producing a PCA-like principal direction.
-
-So the hierarchy is:
-
-```text
-fixed receptor mosaic  → listen for a hand-specified temporal pattern
-Oja / PCA              → learn a strong variance direction
-AMUSE                  → learn a basis from one delayed covariance
-SOBI                   → learn a basis from several delayed covariances
-ICA                     → use higher-order / non-Gaussian structure
-IVA                     → align corresponding sources across views
-IVE                     → extract only the source currently wanted
-```
-
-GeoNeuronX will not award points for using the fanciest method. The boring method wins if it works better.
-
----
-
-# Gate 0 — LENGTH IS A TEMPORAL COORDINATE
+# Gate 0 — length changes temporal transfer
 
 `experiments/gate0_length_is_memory.py`
 
-Three independent AR(1) sources have equal marginal variance but different temporal autocorrelation. They are observed through eight branch-local channels. The observation matrix is generated only from branch path lengths using a delayed/attenuated transfer law.
+The first toy used a hand-written delayed/attenuated transfer law. Total path-length budget was fixed while path lengths were redistributed.
 
-The sweep holds **branch count, mean path length, and total path-length budget fixed** and changes only the **distribution/span of path lengths**. Long branches are paid for by shorter ones. This makes Gate 0 an allocation test, not a “more material always wins” test.
+Equal paths produced a redundant observation basis. Diverse paths produced a better-conditioned one, and AMUSE then recovered temporally distinct sources much more successfully.
 
-Attacks:
+A random digital matrix did equally well or better.
 
-```text
-equal-length morphology
-PCA
-online Oja (one component)
-AMUSE(τ=1)
-random digital full-rank matrix
-```
+Surviving claim:
 
-Question:
-
-> Under a fixed total path-length budget, does redistributing material into short and long paths increase the rank/conditioning of the morphology-generated temporal basis, and does AMUSE then recover the underlying dynamical sources more reliably?
-
-This is a **candidate mathematical reason for length**, not a biological validation.
-
-The digital random-matrix arm is load-bearing: if it does just as well, the correct conclusion is that geometry can *embody* a useful basis, not that geometry is algorithmically superior.
+> geometry can physically instantiate a useful matrix; it is not a better matrix merely because it is geometry.
 
 ---
 
-# Gate 1 — THE AIS IS AN ADAPTIVE NECK
+# Gate 1 — the AIS is an adaptive neck
 
 `experiments/gate1_ais_homeostasis.py`
 
-The same dendritic branch activity is scaled across four large changes in total somatic drive. Compare:
+A scalar effective AIS threshold adapts to output-rate error.
 
-```text
-fixed spike threshold
-vs.
-minimal homeostatic AIS threshold
-```
+Across a 4x change in upstream drive, a fixed threshold changes firing dramatically while the slow adaptive threshold keeps the event rate near its target.
 
-The adaptive AIS tracks firing-rate error:
+This is only a functional abstraction of homeostatic excitability, not a literal model of AIS length, position, channel density, or electrogenesis.
 
-```text
-high sustained output → harder to fire
-low sustained output  → easier to fire
-```
+Surviving claim:
 
-This intentionally models only the **functional direction** of AIS homeostasis. It does not pretend that a scalar threshold equals AIS position, length, channel density, or real electrogenesis.
-
-Question:
-
-> Can the output neck preserve a stable event budget while the complexity/load upstream changes?
-
-This is the first explicit `INNER → AIS → OUTER` experiment in the restart.
+> rich upstream computation and the outgoing event budget can be controlled by different mechanisms.
 
 ---
 
-# Gate 2 — PASSIVE CABLE, FIXED MATERIAL
+# Gate 2 — passive cable, fixed material
 
 `experiments/gate2_passive_cable_geometry.py`
 
-Gate 2 deletes Gate 0's hand-written `H(f,L)` and replaces it with a passive compartmental RC cable:
+Gate 2 deleted the hand-written transfer law and replaced it with a passive compartmental cable:
 
 ```text
 C dV/dt = -G V + I
 ```
 
-The tree has seven cable sections and four leaves. Across the sweep we hold fixed:
+Across morphologies it held fixed:
 
-- topology and branch count;
-- number of compartments;
-- dendrite diameter;
+- topology;
+- branch count;
+- diameter;
+- compartment count;
 - passive `Cm`, `Rm`, and axial resistivity;
-- **total dendritic cable length = 840 µm**;
-- therefore **total dendritic membrane area**.
+- total dendritic cable length = `840 µm`;
+- therefore total dendritic area.
 
-Only the allocation of that cable among the seven sections changes. Longer sections are paid for by shorter sections. The branch-local transfer functions are not specified analytically: they emerge from the compartmental admittance matrix.
+Only cable allocation changed.
 
-The clean first assay drives one scalar mixture at the soma and records one local voltage from each cable section. This direction is chosen only to isolate the cable-generated temporal basis. For the passive linear model the transfer impedance is reciprocal; the measured reciprocity error is `3.3e-16`. A later gate should distribute synaptic currents over the dendritic tree and test inward propagation directly.
+For narrow-band sources at 2, 20, and 100 Hz, increasing path heterogeneity improved AMUSE recovery from `0.7356` to `0.8666` and supervised linear recovery from `0.7848` to `0.8810`.
 
-Five-seed development result for narrow-band dynamical sources at 2, 20, and 100 Hz:
+For broad AR(1) sources the same manipulation did not help.
 
-| path heterogeneity | leaf-path SD (µm) | transfer condition | PCA recovery | AMUSE recovery | oracle linear corr |
-|---:|---:|---:|---:|---:|---:|
-| 0.0 | 0.00 | 601.3 | 0.7217 | 0.7356 | 0.7848 |
-| 0.2 | 16.95 | 335.9 | 0.7766 | 0.8200 | 0.8452 |
-| 0.4 | 33.90 | 223.4 | 0.8005 | 0.8493 | 0.8677 |
-| 0.6 | 50.85 | 171.5 | 0.8146 | 0.8615 | 0.8772 |
-| 0.8 | 67.80 | 144.2 | 0.8242 | **0.8666** | **0.8810** |
+A seven-state digital RC bank beat the cable.
 
-So the analytic Gate-0 effect survives a real passive cable in this source class: redistributing the same membrane into unequal paths creates a better-conditioned temporal basis and makes the hidden oscillatory processes easier to recover from branch-local voltages.
+Surviving claim:
 
-But the boundary is equally important. On broad AR(1) sources, the same geometry sweep does **not** improve recovery: AMUSE moves `0.4191 -> 0.4123`, and the supervised linear attacker moves `0.6297 -> 0.6183`. Passive path diversity is therefore **not a generic source-separation machine**. It helps when the source dynamics interact usefully with the cable's frequency-dependent filtering.
+> **fixed material can be redistributed into geometry that exposes a more useful temporal basis for some source classes.**
 
-A seven-state digital RC filter bank is also an explicit attacker. Its supervised recovery on the oscillatory case is `0.9548`, better than the cable's `0.8810`. The surviving claim is therefore deliberately narrow:
-
-> **Fixed dendritic material can be redistributed into geometry that generates useful temporal coordinates. Ordinary digital filters can generate such coordinates too, and can do it better.**
-
-This is the first GeoNeuronX result where `length -> temporal transfer` survives after removing the hand-written transfer law.
+Not all histories benefit from the same morphology.
 
 ---
 
-## What would count as a stronger result later?
+# Gate 3 — geometry materializes history into space
 
-The first three gates are intentionally small. The serious next experiments are already visible:
+`experiments/gate3_distributed_synapses.py`
 
-1. **Distributed synaptic drive.** Move the source mixtures onto dendritic synapses and test whether separability changes as activity propagates inward toward branch points and soma.
-2. **Morphology-preserving attacks.** Preserve total area while redistributing path lengths; preserve branch count while collapsing long bifurcation paths; shuffle synapse locations.
-3. **NMDA ablation.** Add local dendritic nonlinearities, then remove them while holding morphology fixed.
-4. **Where does separability appear?** Score source recovery at synaptic input, distal branch, bifurcation branch, proximal dendrite, soma.
-5. **Rat-like vs human-like geometry.** Ask whether the more complex morphology provides a larger useful temporal basis under matched input statistics.
-6. **Population specialization.** Several units receive the same mixtures; local/Oja/PEM-like learning plus lateral competition should make different units specialize to different temporal causes.
-7. **IVE/attention.** Once a population has candidate causes, extract only the source relevant to the current task rather than globally disentangling everything.
-8. **Axonal fan-out.** One narrow event stream can drive many downstream targets; test whether downstream recipients can reconstruct/use different aspects of the same source under different local filters.
+Gate 3 moved the drive to distal synapses and strengthened the morphology control.
 
-The stop condition is simple: if matched FIR/SSM/filter-bank baselines do everything equally well for less cost, say so.
+Every tested tree had the same:
+
+- total cable: `840 µm`;
+- membrane area;
+- branch count;
+- four leaf synapses;
+- **soma-to-leaf path length: exactly `360 µm`**.
+
+Only the location of cable relative to the branch points changed. The internal bifurcation sections were swept from `40 -> 210 µm` while trunk and terminal sections paid for the change.
+
+For the hidden narrow-band source mixture:
+
+```text
+bifurcation AMUSE       0.5730 -> 0.8592
+bifurcation static      0.7293 -> 0.8748
+trunk static            0.7440 -> 0.6863
+```
+
+So moving cable did not simply make the whole neuron “better.” It redistributed **where temporal information was instantly accessible**.
+
+Then the critical attacker arrived.
+
+Give the readout explicit digital history and almost every region reaches approximately `0.96` source recovery, including a delayed readout from the one-dimensional soma trace.
+
+Therefore the tree did not create information unavailable in the past input.
+
+It did this:
+
+```text
+history in time
+      ↓
+physical cable dynamics
+      ↓
+state distributed in space
+```
+
+That is the cleanest connection yet to the old Takens abstraction.
 
 ---
 
-## Claims explicitly NOT made
+# Gate 4 — the dynamical neuron
 
-- dendrites implement AMUSE, SOBI, ICA, Takens, or Oja;
-- Aizenbud et al. demonstrated source separation;
-- AIS position is literally a scalar threshold;
-- dendritic length exists *because* it separates sources;
-- morphology beats digital filters;
-- this is a brain simulator;
-- this is evidence for consciousness or a new theory of intelligence.
+`experiments/gate4_dynamical_neuron.py`
 
-The current claim is only:
+Gate 4 deliberately stops asking only about source recovery and asks whether the proposed unit performs a **nonlinear temporal computation**.
 
-> **Path length changes temporal transfer. Temporal transfer diversity can create additional coordinates. Mature source-separation mathematics tells us how to test whether those coordinates make hidden dynamical causes easier to recover. The AIS provides a biologically real adaptive boundary where rich internal computation is converted into a narrow outgoing event stream.**
+One noisy +/-1 telegraph stream is injected at the distal leaves. The target is delayed XOR:
 
-That is enough to build.
+```text
++1 if sign(x[t]) != sign(x[t - 16 ms])
+-1 otherwise
+```
+
+This task is chosen because possessing history is not enough. A linear readout of delayed coordinates cannot implement XOR.
+
+Six arms are compared:
+
+```text
+soma voltage -> linear readout
+soma voltage -> nonlinear threshold bank -> linear readout
+branch voltages -> linear readout
+branch voltages -> LOCAL nonlinear threshold banks -> linear soma/readout
+explicit digital FIR -> linear readout
+explicit digital FIR + quadratic products -> linear readout
+```
+
+Five-seed development accuracy:
+
+| bifurcation allocation | soma linear | soma nonlinear | branch linear | **branch-local nonlinear** | FIR linear | **FIR quadratic** |
+|---:|---:|---:|---:|---:|---:|---:|
+| 40 µm  | 0.4986 | 0.5115 | 0.5008 | **0.5792** | 0.4990 | **1.0000** |
+| 120 µm | 0.4984 | 0.5104 | 0.5012 | **0.5849** | 0.4990 | **1.0000** |
+| 210 µm | 0.4980 | 0.5094 | 0.5015 | **0.5935** | 0.4990 | **1.0000** |
+
+What this says:
+
+1. passive history/state alone is not sufficient for the nonlinear temporal relation;
+2. putting a nonlinearity only after soma collapse barely helps;
+3. applying nonlinearities locally to multiple differently filtered branch states does help;
+4. cable allocation modulates that nonlinear computation;
+5. an ordinary digital quadratic-delay map annihilates the task and remains the winner.
+
+This is the first gate that earns the phrase **dynamical neuron abstraction**:
+
+> **a stateful temporal feature generator with local nonlinear computation and a learned output integration.**
+
+It is not yet a learned autonomous neuron, and it is certainly not evidence of intelligence. But it is now more than a filter bank: the placement of nonlinearity before state collapse gives the unit a nonlinear temporal computation.
+
+Full development note: `results/GATE4.md`.
 
 ---
 
-## Run
+# What the abstraction currently preserves
+
+The candidate GeoNeuron is not one equation. It has several timescales and computational roles:
+
+```text
+FAST STATE
+cable / branch voltages
+what happened recently?
+
+LOCAL NONLINEAR COMPUTE
+branch subunits
+what combinations of that filtered history matter right now?
+
+LEARNED OPERATOR
+synaptic / soma weights
+which branch features matter over experience?
+
+OPERATING POINT
+AIS / homeostasis
+how excitable should the output channel be?
+
+COMMUNICATION
+axon event stream
+what compact event gets broadcast onward?
+```
+
+This division is intentional. One magical variable is not being asked to be state, memory, representation, learning, and intelligence all at once.
+
+---
+
+# Where AMUSE / SOBI / ICA / IVA / IVE fit now
+
+They are not the neuron. They are mathematical lenses and possible learning objectives for populations of these units.
+
+```text
+Oja / PCA
+    find strong variance structure in branch state
+
+AMUSE
+    use one lag to find temporally distinct processes
+
+SOBI
+    use several lags / timescales
+
+ICA
+    exploit higher-order statistical independence
+
+IVA
+    align corresponding processes across different populations/views
+
+IVE
+    extract only the process currently relevant to the task
+```
+
+A plausible later population architecture is:
+
+```text
+same mixed world
+      ↓
+GeoNeuron 1  -- specializes to temporal process A
+GeoNeuron 2  -- specializes to temporal process B
+GeoNeuron 3  -- specializes to temporal process C
+      ↑
+local learning + lateral competition
+```
+
+Then prediction/action can select only the currently useful source rather than globally disentangling everything.
+
+That is where Tuesday's source-separation work returns.
+
+---
+
+# What would make this more than an explanatory diagram?
+
+The current abstraction still has several conveniences that must be attacked.
+
+## Gate 5A — nonlinear feedback inside the dendrite
+
+Gate 4 applies the local nonlinearity to recorded branch state before the soma readout. It does not change the cable dynamics themselves.
+
+Next:
+
+```text
+passive cable
+vs
+transparent voltage-dependent branch current
+vs
+conductance-based NMDA-like branch model
+```
+
+Question:
+
+> does local nonlinear feedback change the state trajectory itself in a useful way, or is post-hoc nonlinear readout enough?
+
+Do not call it NMDA until the conductance model deserves that name.
+
+## Gate 5B — replace supervised soma fitting with local learning
+
+The current soma weights are a supervised ridge convenience.
+
+Replace them with:
+
+```text
+Oja / normalized Hebb
+prediction-error plasticity
+Bozkurt-like local feedforward updates
+lateral covariance suppression / inhibition
+```
+
+Question:
+
+> can several units receiving the same mixtures specialize into different temporal computations without global source labels?
+
+## Gate 6 — useful behavior, not pretty components
+
+The output must earn itself in a task:
+
+- prediction;
+- anomaly detection;
+- source extraction;
+- control;
+- compression;
+- transfer to changed sensor geometry.
+
+If a recovered “cause” does not buy something downstream, throw it away.
+
+## Gate 7 — axonal fan-out
+
+One narrow event stream reaches many recipients with different dendritic filters.
+
+Question:
+
+> can different downstream units extract different useful consequences from the same axonal event stream because their local temporal feature maps differ?
+
+---
+
+# Attacker policy
+
+GeoNeuronX is not allowed to win by choosing weak baselines.
+
+Current boring attackers include:
+
+- PCA;
+- AMUSE;
+- explicit FIR/delay lines;
+- digital RC banks;
+- supervised linear oracles;
+- polynomial/quadratic temporal features.
+
+Later gates should add:
+
+- matched MLP;
+- matched TCN;
+- matched SSM/reservoir;
+- ordinary adaptive filter banks.
+
+If those do the same job with less state, less data, less compute, or more stability, they win.
+
+The point of the abstraction is not to beat silicon at being silicon. It is to discover whether a **local stateful nonlinear unit** has an interesting computational bias worth stealing.
+
+---
+
+# Claims explicitly NOT made
+
+- dendrites literally implement Takens, AMUSE, SOBI, ICA, IVA, IVE, or Oja;
+- Aizenbud et al. demonstrated blind source separation;
+- AIS position is literally one scalar threshold;
+- path length exists because evolution wanted source separation;
+- longer branches are always better;
+- morphology creates information not already present in input history;
+- GeoNeuronX beats FIRs, polynomial features, MLPs, TCNs, or SSMs;
+- this is a biological neuron simulator;
+- this is a theory of consciousness;
+- Gate 4 demonstrates intelligence.
+
+The current claim is:
+
+> **A branched stateful substrate can convert temporal history into simultaneous local coordinates. Geometry changes those coordinates. Applying nonlinear computation locally before soma collapse creates a nonlinear temporal feature map. A learned soma can use that map, while an adaptive AIS can regulate the outgoing event channel. This is a coherent dynamical-neuron abstraction worth attacking.**
+
+That is enough.
+
+---
+
+# Run
 
 ```bash
 python -m pip install -r requirements.txt
+
 python experiments/gate0_length_is_memory.py
 python experiments/gate1_ais_homeostasis.py
 python experiments/gate2_passive_cable_geometry.py
+python experiments/gate3_distributed_synapses.py
+python experiments/gate4_dynamical_neuron.py
+
 python -m unittest discover -s tests -v
 ```
 
@@ -300,40 +558,45 @@ Receipts are written to `results/`.
 
 ---
 
-## Literature anchors
+# Literature anchors
 
-- Ido Aizenbud et al. (2026), **Dendritic morphology and synaptic nonlinearities enhance functional complexity in human cortical neurons**, PNAS 123(28), e2533168123. DOI: 10.1073/pnas.2533168123.
-- Christophe Leterrier (2018), **The Axon Initial Segment: An Updated Viewpoint**, Journal of Neuroscience 38(9):2135–2145. DOI: 10.1523/JNEUROSCI.1922-17.2018.
+- Ido Aizenbud et al. (2026), **Dendritic morphology and synaptic nonlinearities enhance functional complexity in human cortical neurons**, PNAS 123(28), e2533168123.
+- Christophe Leterrier (2018), **The Axon Initial Segment: An Updated Viewpoint**, Journal of Neuroscience 38(9):2135-2145.
 - Pan, Matilainen, Taskinen & Nordhausen, **A review of second-order blind identification methods** — AMUSE/SOBI and extensions.
 - Bariscan Bozkurt et al. (2026), **Normative Networks for Source Separation via Local Plasticity and Dendritic Computation**, arXiv:2605.19965.
-- Erkki Oja / Hyvärinen & Oja — local normalized Hebbian learning, PCA/ICA lineage.
+- Erkki Oja / Hyvärinen & Oja — normalized Hebbian learning, PCA/ICA lineage.
 
 ---
 
-## Lineage
+# Lineage
 
 ```text
 Geometric Neuron
-    delay geometry + fixed receptor mosaic
+    explicit delay geometry + fixed receptor mosaic
           ↓
 Saturday
-    state/material changes future processing
+    state changes future processing
           ↓
 Sunday
-    separate fast state from persistent written operator
+    separate fast state from persistent learned operator
           ↓
 Monday
-    hidden causes + ICA/IVA/IVE; morphology attacked by FIR
+    matrices / ICA / IVA / IVE; geometry attacked by FIR
           ↓
 Tuesday
-    AMUSE/SOBI: history itself can identify a dynamical cause
+    AMUSE / SOBI: hidden processes can be identified by temporal structure
           ↓
-GeoNeuronX
-    LENGTH → TEMPORAL TRANSFER → LOCAL CAUSE COORDINATES
-                         ↓
-                  adaptive AIS neck
-                         ↓
-                    axonal event
+GeoNeuronX Gates 0-3
+    physical geometry turns history into branch state
+          ↓
+GeoNeuronX Gate 4
+    local nonlinear computation acts on that history-bearing state
+          ↓
+DYNAMICAL NEURON
+    stateful temporal feature map
+        + local nonlinearity
+        + learned soma integration
+        + adaptive AIS event channel
 ```
 
-**Build the boring abstraction first. Let the biology earn every stronger interpretation.**
+**The next question is no longer “is geometry computation?” It is: what can this dynamical neuron learn locally that a simpler filter, MLP, TCN, or SSM cannot do more cheaply?**
