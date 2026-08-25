@@ -155,7 +155,7 @@ GeoNeuronX will not award points for using the fanciest method. The boring metho
 
 Three independent AR(1) sources have equal marginal variance but different temporal autocorrelation. They are observed through eight branch-local channels. The observation matrix is generated only from branch path lengths using a delayed/attenuated transfer law.
 
-The sweep holds branch count fixed and changes only the **span of path lengths**.
+The sweep holds **branch count, mean path length, and total path-length budget fixed** and changes only the **distribution/span of path lengths**. Long branches are paid for by shorter ones. This makes Gate 0 an allocation test, not a “more material always wins” test.
 
 Attacks:
 
@@ -169,7 +169,7 @@ random digital full-rank matrix
 
 Question:
 
-> As path-length diversity increases, does the morphology-generated transfer matrix gain rank/conditioning, and does AMUSE recover the underlying dynamical sources more reliably?
+> Under a fixed total path-length budget, does redistributing material into short and long paths increase the rank/conditioning of the morphology-generated temporal basis, and does AMUSE then recover the underlying dynamical sources more reliably?
 
 This is a **candidate mathematical reason for length**, not a biological validation.
 
