@@ -1,0 +1,59 @@
+{
+  "config": {
+    "dt_ms": 0.5,
+    "n_samples": 16000,
+    "burn": 2000,
+    "seeds": [0, 1, 2, 3, 4],
+    "bifurcation_lengths_um": [40.0, 120.0, 210.0],
+    "source_frequencies_hz": [2.0, 20.0, 100.0],
+    "temporal_lag_samples": 16,
+    "temporal_lag_ms": 8.0,
+    "n_components": 3,
+    "learning_rate": 0.0002,
+    "epochs": 4,
+    "batch_whitening_convenience": true
+  },
+  "summary": {
+    "40": {
+      "independent_oja_recovery": 0.332964845,
+      "independent_oja_duplication": 0.999597037,
+      "sanger_temporal_recovery": 0.770518680,
+      "sanger_temporal_duplication": 0.013910870,
+      "shuffled_temporal_recovery": 0.686895740,
+      "shuffled_temporal_duplication": 0.017000500,
+      "zero_lag_sanger_recovery": 0.665371310,
+      "zero_lag_sanger_duplication": 0.033767840,
+      "batch_amuse_recovery": 0.791062365
+    },
+    "120": {
+      "independent_oja_recovery": 0.329283348,
+      "independent_oja_duplication": 0.999874962,
+      "sanger_temporal_recovery": 0.800410130,
+      "sanger_temporal_duplication": 0.011137560,
+      "shuffled_temporal_recovery": 0.727215980,
+      "shuffled_temporal_duplication": 0.020348980,
+      "zero_lag_sanger_recovery": 0.746109190,
+      "zero_lag_sanger_duplication": 0.031246800,
+      "batch_amuse_recovery": 0.805476008
+    },
+    "210": {
+      "independent_oja_recovery": 0.331113244,
+      "independent_oja_duplication": 0.999613798,
+      "sanger_temporal_recovery": 0.844024830,
+      "sanger_temporal_duplication": 0.012875280,
+      "shuffled_temporal_recovery": 0.762219500,
+      "shuffled_temporal_duplication": 0.022353470,
+      "zero_lag_sanger_recovery": 0.781127540,
+      "zero_lag_sanger_duplication": 0.033590890,
+      "batch_amuse_recovery": 0.847945600
+    }
+  },
+  "gates": {
+    "independent_oja_collapses": true,
+    "lateral_competition_diversifies": true,
+    "temporal_relation_matters": true,
+    "online_rule_near_batch_amuse": true,
+    "geometry_modulates_learned_specialization": true
+  },
+  "note": "Development summary from the equivalent local run used while writing Gate 5. Running experiments/gate5_population_specialization.py regenerates a full raw per-seed receipt."
+}
