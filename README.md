@@ -206,11 +206,56 @@ This is the first explicit `INNER → AIS → OUTER` experiment in the restart.
 
 ---
 
+# Gate 2 — PASSIVE CABLE, FIXED MATERIAL
+
+`experiments/gate2_passive_cable_geometry.py`
+
+Gate 2 deletes Gate 0's hand-written `H(f,L)` and replaces it with a passive compartmental RC cable:
+
+```text
+C dV/dt = -G V + I
+```
+
+The tree has seven cable sections and four leaves. Across the sweep we hold fixed:
+
+- topology and branch count;
+- number of compartments;
+- dendrite diameter;
+- passive `Cm`, `Rm`, and axial resistivity;
+- **total dendritic cable length = 840 µm**;
+- therefore **total dendritic membrane area**.
+
+Only the allocation of that cable among the seven sections changes. Longer sections are paid for by shorter sections. The branch-local transfer functions are not specified analytically: they emerge from the compartmental admittance matrix.
+
+The clean first assay drives one scalar mixture at the soma and records one local voltage from each cable section. This direction is chosen only to isolate the cable-generated temporal basis. For the passive linear model the transfer impedance is reciprocal; the measured reciprocity error is `3.3e-16`. A later gate should distribute synaptic currents over the dendritic tree and test inward propagation directly.
+
+Five-seed development result for narrow-band dynamical sources at 2, 20, and 100 Hz:
+
+| path heterogeneity | leaf-path SD (µm) | transfer condition | PCA recovery | AMUSE recovery | oracle linear corr |
+|---:|---:|---:|---:|---:|---:|
+| 0.0 | 0.00 | 601.3 | 0.7217 | 0.7356 | 0.7848 |
+| 0.2 | 16.95 | 335.9 | 0.7766 | 0.8200 | 0.8452 |
+| 0.4 | 33.90 | 223.4 | 0.8005 | 0.8493 | 0.8677 |
+| 0.6 | 50.85 | 171.5 | 0.8146 | 0.8615 | 0.8772 |
+| 0.8 | 67.80 | 144.2 | 0.8242 | **0.8666** | **0.8810** |
+
+So the analytic Gate-0 effect survives a real passive cable in this source class: redistributing the same membrane into unequal paths creates a better-conditioned temporal basis and makes the hidden oscillatory processes easier to recover from branch-local voltages.
+
+But the boundary is equally important. On broad AR(1) sources, the same geometry sweep does **not** improve recovery: AMUSE moves `0.4191 -> 0.4123`, and the supervised linear attacker moves `0.6297 -> 0.6183`. Passive path diversity is therefore **not a generic source-separation machine**. It helps when the source dynamics interact usefully with the cable's frequency-dependent filtering.
+
+A seven-state digital RC filter bank is also an explicit attacker. Its supervised recovery on the oscillatory case is `0.9548`, better than the cable's `0.8810`. The surviving claim is therefore deliberately narrow:
+
+> **Fixed dendritic material can be redistributed into geometry that generates useful temporal coordinates. Ordinary digital filters can generate such coordinates too, and can do it better.**
+
+This is the first GeoNeuronX result where `length -> temporal transfer` survives after removing the hand-written transfer law.
+
+---
+
 ## What would count as a stronger result later?
 
-The first two gates are intentionally small. The serious next experiments are already visible:
+The first three gates are intentionally small. The serious next experiments are already visible:
 
-1. **Real cable morphology.** Replace the analytic `H(f,L)` bank with a compartmental cable model or reconstructed morphology.
+1. **Distributed synaptic drive.** Move the source mixtures onto dendritic synapses and test whether separability changes as activity propagates inward toward branch points and soma.
 2. **Morphology-preserving attacks.** Preserve total area while redistributing path lengths; preserve branch count while collapsing long bifurcation paths; shuffle synapse locations.
 3. **NMDA ablation.** Add local dendritic nonlinearities, then remove them while holding morphology fixed.
 4. **Where does separability appear?** Score source recovery at synaptic input, distal branch, bifurcation branch, proximal dendrite, soma.
@@ -247,6 +292,7 @@ That is enough to build.
 python -m pip install -r requirements.txt
 python experiments/gate0_length_is_memory.py
 python experiments/gate1_ais_homeostasis.py
+python experiments/gate2_passive_cable_geometry.py
 python -m unittest discover -s tests -v
 ```
 
