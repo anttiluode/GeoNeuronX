@@ -1,0 +1,64 @@
+{
+  "status": "development receipt; thresholds and parameters chosen during implementation",
+  "config": {
+    "dt_ms": 0.5,
+    "n_samples": 12000,
+    "burn": 2000,
+    "seeds": [0, 1, 2, 3, 4],
+    "bifurcation_lengths_um": [40.0, 80.0, 120.0, 160.0, 210.0],
+    "total_length_um": 840.0,
+    "leaf_path_length_um": 360.0,
+    "source_frequencies_hz": [2.0, 20.0, 100.0],
+    "amuse_lag_samples": 16,
+    "amuse_lag_ms": 8.0,
+    "fir_lags_samples": [0, 2, 4, 8, 16, 32, 64],
+    "leaf_gains": [1.0, 0.7, -0.55, 0.35],
+    "measurement_noise_fraction": 0.003
+  },
+  "summary": {
+    "40": {
+      "distal": {"amuse_recovery": 0.7638072173, "static_oracle_corr": 0.8118212214, "fir_oracle_corr": 0.9620039006},
+      "bifurcation": {"amuse_recovery": 0.5729974970, "static_oracle_corr": 0.7293273065, "fir_oracle_corr": 0.9613723485},
+      "trunk": {"amuse_recovery": 0.6993019829, "static_oracle_corr": 0.7439929891, "fir_oracle_corr": 0.9612802769},
+      "all_midpoints": {"amuse_recovery": 0.7992586426, "static_oracle_corr": 0.8966701489, "fir_oracle_corr": 0.9624719498},
+      "soma": {"amuse_recovery": null, "static_oracle_corr": 0.3362905512, "fir_oracle_corr": 0.9549731941}
+    },
+    "80": {
+      "distal": {"amuse_recovery": 0.7947006632, "static_oracle_corr": 0.8272411240, "fir_oracle_corr": 0.9622224990},
+      "bifurcation": {"amuse_recovery": 0.6435192332, "static_oracle_corr": 0.7389600016, "fir_oracle_corr": 0.9616643777},
+      "trunk": {"amuse_recovery": 0.6544492693, "static_oracle_corr": 0.7167810844, "fir_oracle_corr": 0.9610982268},
+      "all_midpoints": {"amuse_recovery": 0.7917174879, "static_oracle_corr": 0.8678166139, "fir_oracle_corr": 0.9623301396},
+      "soma": {"amuse_recovery": null, "static_oracle_corr": 0.3373919042, "fir_oracle_corr": 0.9551388848}
+    },
+    "120": {
+      "distal": {"amuse_recovery": 0.8139548338, "static_oracle_corr": 0.8380210247, "fir_oracle_corr": 0.9623840925},
+      "bifurcation": {"amuse_recovery": 0.7766796203, "static_oracle_corr": 0.8111876116, "fir_oracle_corr": 0.9619903946},
+      "trunk": {"amuse_recovery": 0.6136001086, "static_oracle_corr": 0.6984496985, "fir_oracle_corr": 0.9608835688},
+      "all_midpoints": {"amuse_recovery": 0.8120397857, "static_oracle_corr": 0.8432024769, "fir_oracle_corr": 0.9623355306},
+      "soma": {"amuse_recovery": null, "static_oracle_corr": 0.3384584891, "fir_oracle_corr": 0.9552615080}
+    },
+    "160": {
+      "distal": {"amuse_recovery": 0.8266394842, "static_oracle_corr": 0.8455215919, "fir_oracle_corr": 0.9625178110},
+      "bifurcation": {"amuse_recovery": 0.8322876549, "static_oracle_corr": 0.8502382118, "fir_oracle_corr": 0.9622805868},
+      "trunk": {"amuse_recovery": 0.5805822161, "static_oracle_corr": 0.6896562622, "fir_oracle_corr": 0.9606231086},
+      "all_midpoints": {"amuse_recovery": 0.8326480106, "static_oracle_corr": 0.8878343675, "fir_oracle_corr": 0.9626300559},
+      "soma": {"amuse_recovery": null, "static_oracle_corr": 0.3394831835, "fir_oracle_corr": 0.9553618094}
+    },
+    "210": {
+      "distal": {"amuse_recovery": 0.8367489633, "static_oracle_corr": 0.8516252964, "fir_oracle_corr": 0.9626587189},
+      "bifurcation": {"amuse_recovery": 0.8592325305, "static_oracle_corr": 0.8747677678, "fir_oracle_corr": 0.9625452584},
+      "trunk": {"amuse_recovery": 0.5565068563, "static_oracle_corr": 0.6862905354, "fir_oracle_corr": 0.9601894051},
+      "all_midpoints": {"amuse_recovery": 0.8531531496, "static_oracle_corr": 0.9064577212, "fir_oracle_corr": 0.9629712441},
+      "soma": {"amuse_recovery": null, "static_oracle_corr": 0.3406878221, "fir_oracle_corr": 0.9554805777}
+    }
+  },
+  "gates": {
+    "fixed_material": true,
+    "fixed_leaf_path_length": true,
+    "distal_blind_access_improves": true,
+    "bifurcation_blind_access_improves": true,
+    "history_is_redistributed": true,
+    "digital_delay_erases_geometry_advantage": true,
+    "soma_needs_history": true
+  }
+}
