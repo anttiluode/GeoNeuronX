@@ -1,0 +1,51 @@
+{
+  "development_receipt": true,
+  "config": {
+    "dt_ms": 0.5,
+    "n_samples": 12000,
+    "burn": 2000,
+    "seeds": [0, 1, 2, 3, 4],
+    "bifurcation_lengths_um": [40.0, 120.0, 210.0],
+    "total_length_um": 840.0,
+    "leaf_path_length_um": 360.0,
+    "target_lag_samples": 32,
+    "target_lag_ms": 16.0,
+    "telegraph_hold_samples": 4,
+    "local_thresholds": [-1.5, -0.75, 0.0, 0.75, 1.5],
+    "digital_lags_samples": [0, 2, 4, 8, 16, 32, 64],
+    "mean_positive_fraction": 0.49856
+  },
+  "summary": {
+    "40": {
+      "soma_linear": {"corr": 0.01574, "accuracy": 0.49860, "nmse": 1.00326},
+      "soma_nonlinear": {"corr": 0.02877, "accuracy": 0.51145, "nmse": 1.00289},
+      "branch_linear": {"corr": 0.02537, "accuracy": 0.50075, "nmse": 1.00433},
+      "branch_local_nonlinear": {"corr": 0.18782, "accuracy": 0.57915, "nmse": 0.96940},
+      "digital_fir_linear": {"corr": 0.03843, "accuracy": 0.49900, "nmse": 1.00525},
+      "digital_fir_quadratic": {"corr": 0.99745, "accuracy": 1.00000, "nmse": 0.00509}
+    },
+    "120": {
+      "soma_linear": {"corr": 0.01596, "accuracy": 0.49835, "nmse": 1.00330},
+      "soma_nonlinear": {"corr": 0.02970, "accuracy": 0.51035, "nmse": 1.00292},
+      "branch_linear": {"corr": 0.02121, "accuracy": 0.50120, "nmse": 1.00386},
+      "branch_local_nonlinear": {"corr": 0.21221, "accuracy": 0.58485, "nmse": 0.95850},
+      "digital_fir_linear": {"corr": 0.03843, "accuracy": 0.49900, "nmse": 1.00525},
+      "digital_fir_quadratic": {"corr": 0.99745, "accuracy": 1.00000, "nmse": 0.00509}
+    },
+    "210": {
+      "soma_linear": {"corr": 0.01617, "accuracy": 0.49800, "nmse": 1.00335},
+      "soma_nonlinear": {"corr": 0.03036, "accuracy": 0.50935, "nmse": 1.00296},
+      "branch_linear": {"corr": 0.02484, "accuracy": 0.50150, "nmse": 1.00427},
+      "branch_local_nonlinear": {"corr": 0.23454, "accuracy": 0.59345, "nmse": 0.94764},
+      "digital_fir_linear": {"corr": 0.03843, "accuracy": 0.49900, "nmse": 1.00525},
+      "digital_fir_quadratic": {"corr": 0.99745, "accuracy": 1.00000, "nmse": 0.00509}
+    }
+  },
+  "gates": {
+    "linear_memory_is_not_enough": true,
+    "local_nonlinearity_beats_branch_linear": true,
+    "local_before_collapse_beats_soma_nonlinearity": true,
+    "geometry_modulates_nonlinear_compute": true,
+    "digital_quadratic_attacker_wins": true
+  }
+}
